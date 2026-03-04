@@ -1,0 +1,182 @@
+# =============================================
+# Unreal Engine 5 专用忽略规则
+# =============================================
+
+# 二进制文件
+Binaries/
+*.exe
+*.dll
+*.pdb
+*.obj
+*.ilk
+*.idb
+*.pdb
+*.ipdb
+*.iobj
+*.exp
+*.lib
+
+# 中间文件
+Intermediate/
+*.log
+*.response
+*.tlog
+*.vcxproj.*
+*.ideep
+*.sbr
+*.bsc
+*.sdf
+*.opensdf
+*.db
+*.opendb
+*.suo
+*.user
+*.userosscache
+*.sln.docstates.suo
+
+# 生成的项目文件
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.xcodeproj
+*.xcworkspace
+
+# 缓存和临时文件
+DerivedDataCache/
+Saved/
+AutoSaved/
+Backup/
+*.tmp
+*.tmp.md5
+*.tmp.versions
+*.tmp.umap
+*.tmp.uasset
+*_BuiltData.uasset
+
+# 构建输出
+Build/
+*.apk
+*.ipa
+*.app
+*.aab
+
+# IDE 和编辑器文件
+.vs/
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Rider 特定文件
+*.Rider/
+*.rider.user
+*.dotCover
+
+# 平台特定文件
+iOS/
+Android/
+Linux/
+Mac/
+HTML5/
+PS4/
+PS5/
+XboxOne/
+XboxSeriesX/
+
+# 本地化文件
+Localization/
+
+# 崩溃报告和日志
+CrashReports/
+Logs/
+*.log
+*.backup
+
+# 性能分析文件
+Profiling/
+*.ue4stats
+*.profiler
+
+# 包文件
+Packages/
+*.pak
+*.utoc
+*.ucas
+
+# Shader 缓存
+ShaderCache/
+
+# 内容备份
+Content/Backup/
+
+# =============================================
+# 例外规则 - 需要保留的文件
+# =============================================
+
+# 保留必要的配置文件
+!Build/**/*.ini
+!Build/**/*.config
+!Saved/Config/**/*.ini
+
+# 保留 Pak 黑名单文件
+!Build/*/PakBlacklist*.txt
+
+# 保留图标文件
+!Build/**/*.ico
+!Build/**/*.icns
+
+# 保留项目描述文件
+!*.uproject
+!*.uplugin
+
+# 保留源代码目录结构
+!Source/**/
+!**/Plugins/*/Source/**/
+
+# 保留必要的内容文件
+!Content/**/
+!**/Plugins/*/Content/**/
+
+# 保留文档文件
+!*.md
+!*.txt
+!*.pdf
+
+# =============================================
+# 操作系统特定文件
+# =============================================
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+.AppleDB
+.AppleDesktop
+apdisk
+
+# Linux
+*~
+
+# =============================================
+# 版本控制系统文件
+# =============================================
+
+# Git
+!.gitignore
+!.gitattributes
+
+# SVN
+.svn/
+
+# Mercurial
+.hg/
+KingofSlacker/Plugins/Developer/RiderLink/Intermediate/Build/Win64/x64/UnrealEditor/Development
+
+KingofSlacker/Plugins/Developer
