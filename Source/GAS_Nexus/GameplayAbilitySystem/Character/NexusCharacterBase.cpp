@@ -3,8 +3,10 @@
 
 #include "NexusCharacterBase.h"
 
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GAS_Nexus/GameplayAbilitySystem/AbilitySystemComponent/Ability/NexusGameplayAbility.h"
 
 // Sets default values
 ANexusCharacterBase::ANexusCharacterBase()
@@ -79,6 +81,69 @@ void ANexusCharacterBase::OnRep_PlayerState()
 	{
 		AbilitySystemComponent->RefreshAbilityActorInfo();
 	}
+}
+
+TArray<FGameplayAbilitySpecHandle> ANexusCharacterBase::GrantAbilities(TArray<TSubclassOf<UGameplayAbility>> AbilitiesToGrant)
+{
+	
+	// if the ability system component is not valid we return an empty array 
+	if (!AbilitySystemComponent || !HasAuthority())
+	{
+		return TArray<FGameplayAbilitySpecHandle>();
+	}
+
+	//Second Create an empty TArray of type  FGameplayAbilitySpecHandle so we can return the TArray
+	TArray<FGameplayAbilitySpecHandle> AbilityHandles;
+	
+	for (TSubclassOf<UGameplayAbility> Ability : AbilitiesToGrant)
+	{
+		int32 InputID = -1;
+		if (const UNexusGameplayAbility* NexusAbilityCDO = GetDefault<UNexusGameplayAbility>(Ability))
+		{
+			InputID = static_cast<int32>(NexusAbilityCDO->AbilityInputID);
+		}
+		//first loop over all the abilities we give this function and grant them one by one.
+		FGameplayAbilitySpecHandle SpecHandle = AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(
+			Ability, 1, InputID, this));
+
+		AbilityHandles.Add(SpecHandle);
+	}
+	//After Grating all abilities we let UI know before returning.  
+	SendAbilitiesChangedEvent();
+	return AbilityHandles;
+}
+
+void ANexusCharacterBase::RemoveAbilities(TArray<FGameplayAbilitySpecHandle> AbilitiesToRemove)
+{
+	if (!AbilitySystemComponent || !HasAuthority())
+	{
+		return;
+	}
+
+	//ToRemove we just loop over all abilities handles and remove them 
+	for (FGameplayAbilitySpecHandle AbilityHandle : AbilitiesToRemove)
+	{
+		AbilitySystemComponent->ClearAbility(AbilityHandle);
+	}
+	//After removing all abilities we let UI know 
+	
+	SendAbilitiesChangedEvent();
+}
+
+void ANexusCharacterBase::SendAbilitiesChangedEvent()
+{
+	//To Let the UI know that we have Changed abilities by granting them or removing them we need to call this function.
+	FGameplayEventData EventData;
+	EventData.EventTag = FGameplayTag::RequestGameplayTag(FName("Event.Abilities.Changed"));
+	EventData.Instigator = this;
+	EventData.Target = this;
+
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, EventData.EventTag, EventData);
+}
+
+void ANexusCharacterBase::Server_SendGameplayEventToSelf_Implementation(FGameplayEventData EventData)
+{
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, EventData.EventTag, EventData);
 }
 
 UAbilitySystemComponent* ANexusCharacterBase::GetAbilitySystemComponent() const

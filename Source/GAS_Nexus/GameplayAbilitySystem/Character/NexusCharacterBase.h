@@ -35,7 +35,21 @@ protected:
 
 	virtual void PossessedBy(AController* NewController) override;
 
+	//and we set the same variables for the playing using the following functions
 	virtual void OnRep_PlayerState() override;
+	
+	//this function takes in TArray<TSubclassOf<UGameplayAbility>> as an input and returns a Tarray of Spec handle for these abilites.
+	UFUNCTION(BlueprintCallable, Category="Ability System")
+	TArray<FGameplayAbilitySpecHandle> GrantAbilities(TArray<TSubclassOf<UGameplayAbility>> AbilitiesToGrant);
+
+	UFUNCTION(BlueprintCallable, Category="Ability System")
+	void  RemoveAbilities(TArray<FGameplayAbilitySpecHandle> AbilitiesToRemove);
+
+	UFUNCTION(BlueprintCallable, Category="Ability System")
+	void SendAbilitiesChangedEvent();
+	
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category="Ability System")
+	void Server_SendGameplayEventToSelf(FGameplayEventData EventData);
 
 public:	
 	// Called every frame
