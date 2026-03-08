@@ -26,10 +26,13 @@ public:
 	UBasicAttributeSet* BasicAttributeSet;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AbilitySystem")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AbilitySystem")
 	EGameplayEffectReplicationMode AscReplicationMode = EGameplayEffectReplicationMode::Mixed;
 
-protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AbilitySystem")
+	TArray<TSubclassOf<UGameplayAbility>> StartingAbilities;
+
+public:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -39,16 +42,16 @@ protected:
 	virtual void OnRep_PlayerState() override;
 	
 	//this function takes in TArray<TSubclassOf<UGameplayAbility>> as an input and returns a Tarray of Spec handle for these abilites.
-	UFUNCTION(BlueprintCallable, Category="Ability System")
+	UFUNCTION(BlueprintCallable, Category="AbilitySystem")
 	TArray<FGameplayAbilitySpecHandle> GrantAbilities(TArray<TSubclassOf<UGameplayAbility>> AbilitiesToGrant);
 
-	UFUNCTION(BlueprintCallable, Category="Ability System")
-	void  RemoveAbilities(TArray<FGameplayAbilitySpecHandle> AbilitiesToRemove);
+	UFUNCTION(BlueprintCallable, Category="AbilitySystem")
+	void RemoveAbilities(TArray<FGameplayAbilitySpecHandle> AbilitiesToRemove);
 
-	UFUNCTION(BlueprintCallable, Category="Ability System")
+	UFUNCTION(BlueprintCallable, Category="AbilitySystem")
 	void SendAbilitiesChangedEvent();
 	
-	UFUNCTION(Server, Reliable, BlueprintCallable, Category="Ability System")
+	UFUNCTION(Server, Reliable, BlueprintCallable, Category="AbilitySystem")
 	void Server_SendGameplayEventToSelf(FGameplayEventData EventData);
 
 public:	

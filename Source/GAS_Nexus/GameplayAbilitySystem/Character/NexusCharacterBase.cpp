@@ -6,7 +6,8 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GAS_Nexus/GameplayAbilitySystem/AbilitySystemComponent/Ability/NexusGameplayAbility.h"
+#include "GAS_Nexus/GameplayAbilitySystem/AbilitySystemComponent/NexusAbilitySystemComponent.h"
+#include "GAS_Nexus/GameplayAbilitySystem/Ability/NexusGameplayAbility.h"
 
 // Sets default values
 ANexusCharacterBase::ANexusCharacterBase()
@@ -15,7 +16,7 @@ ANexusCharacterBase::ANexusCharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	// Create Ability System Component
-	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent = CreateDefaultSubobject<UNexusAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(AscReplicationMode);
 
@@ -70,6 +71,7 @@ void ANexusCharacterBase::PossessedBy(AController* NewController)
 	if (AbilitySystemComponent)
 	{
 		AbilitySystemComponent->RefreshAbilityActorInfo();
+		GrantAbilities(StartingAbilities);
 	}
 }
 
@@ -86,29 +88,29 @@ void ANexusCharacterBase::OnRep_PlayerState()
 TArray<FGameplayAbilitySpecHandle> ANexusCharacterBase::GrantAbilities(TArray<TSubclassOf<UGameplayAbility>> AbilitiesToGrant)
 {
 	
-	// if the ability system component is not valid we return an empty array 
+	// 如果能力系统组件无效，我们就返回一个空数组
 	if (!AbilitySystemComponent || !HasAuthority())
 	{
 		return TArray<FGameplayAbilitySpecHandle>();
 	}
 
-	//Second Create an empty TArray of type  FGameplayAbilitySpecHandle so we can return the TArray
+	// 第二步，创建一个类型为FGameplayAbilitySpecHandle的空TArray，这样我们就能返回这个TArray了。
 	TArray<FGameplayAbilitySpecHandle> AbilityHandles;
 	
 	for (TSubclassOf<UGameplayAbility> Ability : AbilitiesToGrant)
 	{
 		int32 InputID = -1;
-		if (const UNexusGameplayAbility* NexusAbilityCDO = GetDefault<UNexusGameplayAbility>(Ability))
-		{
-			InputID = static_cast<int32>(NexusAbilityCDO->AbilityInputID);
-		}
-		//first loop over all the abilities we give this function and grant them one by one.
+		// if (const UNexusGameplayAbility* NexusAbilityCDO = GetDefault<UNexusGameplayAbility>(Ability))
+		// {
+		// 	InputID = static_cast<int32>(NexusAbilityCDO->AbilityInputID);
+		// }
+		// 首先遍历我们赋予这个函数的所有能力，并逐一授予它们。
 		FGameplayAbilitySpecHandle SpecHandle = AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(
 			Ability, 1, InputID, this));
 
 		AbilityHandles.Add(SpecHandle);
 	}
-	//After Grating all abilities we let UI know before returning.  
+	// 在取消所有权限后，我们会在返回前通知用户界面。
 	SendAbilitiesChangedEvent();
 	return AbilityHandles;
 }
@@ -120,12 +122,12 @@ void ANexusCharacterBase::RemoveAbilities(TArray<FGameplayAbilitySpecHandle> Abi
 		return;
 	}
 
-	//ToRemove we just loop over all abilities handles and remove them 
+	// ToRemove 我们只需遍历所有能力句柄并将其移除
 	for (FGameplayAbilitySpecHandle AbilityHandle : AbilitiesToRemove)
 	{
 		AbilitySystemComponent->ClearAbility(AbilityHandle);
 	}
-	//After removing all abilities we let UI know 
+	// 移除所有功能后，我们告知了用户界面。
 	
 	SendAbilitiesChangedEvent();
 }
