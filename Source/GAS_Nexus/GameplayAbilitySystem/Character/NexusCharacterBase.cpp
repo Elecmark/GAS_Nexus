@@ -144,8 +144,7 @@ void ANexusCharacterBase::SendAbilitiesChangedEvent()
 }
 
 void ANexusCharacterBase::Server_SendGameplayEventToSelf_Implementation(FGameplayEventData EventData)
-{
-	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, EventData.EventTag, EventData);
+ 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, EventData.EventTag, EventData);
 }
 
 UAbilitySystemComponent* ANexusCharacterBase::GetAbilitySystemComponent() const
