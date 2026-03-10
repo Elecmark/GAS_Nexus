@@ -47,6 +47,8 @@ ANexusCharacterBase::ANexusCharacterBase()
 void ANexusCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+	AbilitySystemComponent->RegisterGameplayTagEvent(FGameplayTag::RequestGameplayTag("State.Dead"))
+			.AddUObject(this, &ANexusCharacterBase::OnDeadTagChanged);
 }
 
 // Called every frame
@@ -67,7 +69,7 @@ void ANexusCharacterBase::PossessedBy(AController* NewController)
 
 	if (AbilitySystemComponent)
 	{
-		AbilitySystemComponent->RefreshAbilityActorInfo();
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 		GrantAbilities(StartingAbilities);
 	}
 }
@@ -78,8 +80,28 @@ void ANexusCharacterBase::OnRep_PlayerState()
 
 	if (AbilitySystemComponent)
 	{
-		AbilitySystemComponent->RefreshAbilityActorInfo();
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	}
+}
+
+void ANexusCharacterBase::OnDeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	if (NewCount > 0)
+	{
+		HandleDeath();
+	}
+}
+
+void ANexusCharacterBase::HandleDeath_Implementation()
+{
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetCollisionEnabled( ECollisionEnabled::QueryAndPhysics);
+	GetCapsuleComponent()->SetCollisionEnabled( ECollisionEnabled::NoCollision);
+	GetCharacterMovement()->DisableMovement();
+
+	FVector Impulse = GetActorForwardVector() * -10000;
+	Impulse.Z = 15000;
+	GetMesh()->AddImpulseAtLocation(Impulse, GetActorLocation());
 }
 
 TArray<FGameplayAbilitySpecHandle> ANexusCharacterBase::GrantAbilities(TArray<TSubclassOf<UGameplayAbility>> AbilitiesToGrant)

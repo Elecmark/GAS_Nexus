@@ -40,7 +40,12 @@ public:
 
 	//and we set the same variables for the playing using the following functions
 	virtual void OnRep_PlayerState() override;
-	
+
+	virtual void OnDeadTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Damage")
+	void HandleDeath();
+
 	//this function takes in TArray<TSubclassOf<UGameplayAbility>> as an input and returns a Tarray of Spec handle for these abilites.
 	UFUNCTION(BlueprintCallable, Category="AbilitySystem")
 	TArray<FGameplayAbilitySpecHandle> GrantAbilities(TArray<TSubclassOf<UGameplayAbility>> AbilitiesToGrant);
