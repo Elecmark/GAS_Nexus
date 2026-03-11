@@ -64,6 +64,13 @@ void UBasicAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 			if (RemainingDamage > 0.f)
 			{
 				SetHealth(GetHealth() - RemainingDamage);
+				if (Data.EffectSpec.Def->GetAssetTags().HasTag(FGameplayTag::RequestGameplayTag("Effects.HitReaction"))
+					&& Data.EvaluatedData.Magnitude != 0.f)
+				{
+					FGameplayTagContainer HitReactionTagContainer;
+					HitReactionTagContainer.AddTag(FGameplayTag::RequestGameplayTag("GameplayAbility.HitReaction"));
+					GetOwningAbilitySystemComponent()->TryActivateAbilitiesByTag(HitReactionTagContainer);
+				}
 			}
 		}
 		else
@@ -99,5 +106,19 @@ void UBasicAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute
 		FGameplayTagContainer DeathAbilityTagContainer;
 		DeathAbilityTagContainer.AddTag(FGameplayTag::RequestGameplayTag("GameplayAbility.Death"));
 		GetOwningAbilitySystemComponent()->TryActivateAbilitiesByTag(DeathAbilityTagContainer);
+	}
+
+	if (Attribute == GetShieldAttribute())
+	{
+		if (NewValue > 0.f && OldValue <= 0.f)
+		{
+			GetOwningAbilitySystemComponent()->AddGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.ShieldUp"));
+		}
+		else if (NewValue <= 0.f && OldValue > 0.f)
+		{
+			GetOwningAbilitySystemComponent()->RemoveGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.ShieldUp"));
+			GetOwningAbilitySystemComponent()->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.ShieldDown"));
+			
+		}
 	}
 }
