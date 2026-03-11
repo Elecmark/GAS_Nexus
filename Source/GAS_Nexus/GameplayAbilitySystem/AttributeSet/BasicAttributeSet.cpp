@@ -12,6 +12,9 @@ UBasicAttributeSet::UBasicAttributeSet()
 	MaxHealth = 100.f;
 	Stamina = 100.f;
 	MaxStamina = 100.f;
+	Shield = 0.f;
+	MaxShield = 50.f;
+	Damage = 0.f;
 }
 
 void UBasicAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -36,23 +39,50 @@ void UBasicAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute,
 	{
 		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxStamina());
 	}
+	else if (Attribute == GetShieldAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxShield());
+	}
 }
 
 void UBasicAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
+	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
+	{
+		float TotalDamage = GetDamage();
+		SetDamage(0.f);
+
+		//从我的护盾中扣除伤害
+		//获取剩余伤害
+		//从生命值中减去剩余的伤害
+		float CurrentShield = GetShield();
+		if (CurrentShield > 0.f)
+		{
+			SetShield(CurrentShield - TotalDamage);
+			float RemainingDamage = TotalDamage - CurrentShield;
+			if (RemainingDamage > 0.f)
+			{
+				SetHealth(GetHealth() - RemainingDamage);
+			}
+		}
+		else
+		{
+			SetHealth(GetHealth() - TotalDamage);
+
+			if (Data.EffectSpec.Def->GetAssetTags().HasTag(FGameplayTag::RequestGameplayTag("Effects.HitReaction"))
+				&& Data.EvaluatedData.Magnitude != 0.f)
+			{
+				FGameplayTagContainer HitReactionTagContainer;
+				HitReactionTagContainer.AddTag(FGameplayTag::RequestGameplayTag("GameplayAbility.HitReaction"));
+				GetOwningAbilitySystemComponent()->TryActivateAbilitiesByTag(HitReactionTagContainer);
+			}
+		}
+	}
 
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(GetHealth());
-
-		if (Data.EffectSpec.Def->GetAssetTags().HasTag(FGameplayTag::RequestGameplayTag("Effects.HitReaction"))
-			&& Data.EvaluatedData.Magnitude != 0.f)
-		{
-			FGameplayTagContainer HitReactionTagContainer;
-			HitReactionTagContainer.AddTag(FGameplayTag::RequestGameplayTag("GameplayAbility.HitReaction"));
-			GetOwningAbilitySystemComponent()->TryActivateAbilitiesByTag(HitReactionTagContainer);
-		}
 	}
 	else if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
 	{
