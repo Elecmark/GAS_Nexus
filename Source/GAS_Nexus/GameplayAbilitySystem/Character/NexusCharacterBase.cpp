@@ -41,6 +41,8 @@ ANexusCharacterBase::ANexusCharacterBase()
 
 	// Add the Basic Attribute Set
 	BasicAttributeSet = CreateDefaultSubobject<UBasicAttributeSet>(TEXT("BasicAttributeSet"));
+	// Add the Combat Attribute Set
+	CombatAttributeSet = CreateDefaultSubobject<UCombatAttributeSet>(TEXT("CombatAttributeSet"));
 }
 
 // Called when the game starts or when spawned

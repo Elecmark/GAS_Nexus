@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "AbilitySystemComponent.h"
 #include "GAS_Nexus/GameplayAbilitySystem/AttributeSet/BasicAttributeSet.h"
+#include "GAS_Nexus/GameplayAbilitySystem/AttributeSet/CombatAttributeSet.h"
 #include "NexusCharacterBase.generated.h"
 
 UCLASS()
@@ -24,6 +25,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AbilitySystem")
 	UBasicAttributeSet* BasicAttributeSet;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AbilitySystem")
+	UCombatAttributeSet* CombatAttributeSet;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AbilitySystem")
