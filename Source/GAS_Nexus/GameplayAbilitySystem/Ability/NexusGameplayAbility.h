@@ -31,12 +31,15 @@ public:
 	 * Variables Delcarations
 	 */
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AbilitiesProperties")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
 	bool bShouldShowInAbilitiesBar = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Activation")
+	bool bAutoActivateWhenGranted = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	EAbilityInputID AbilityInputID = EAbilityInputID::None;
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Abilities")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Helper")
 	bool HasPC() const;
 };

@@ -120,15 +120,22 @@ TArray<FGameplayAbilitySpecHandle> ANexusCharacterBase::GrantAbilities(TArray<TS
 	for (TSubclassOf<UGameplayAbility> Ability : AbilitiesToGrant)
 	{
 		int32 InputID = -1;
+		bool bShouldActivate = false;
 		if (const UNexusGameplayAbility* NexusAbilityCDO = GetDefault<UNexusGameplayAbility>(Ability))
 		{
 			InputID = static_cast<int32>(NexusAbilityCDO->AbilityInputID);
+			bShouldActivate = NexusAbilityCDO->bAutoActivateWhenGranted;
 		}
 		// 首先遍历赋予这个函数的所有能力，并逐一授予它们输入ID。
 		FGameplayAbilitySpecHandle SpecHandle = AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(
 			Ability, 1, InputID, this));
 
 		AbilityHandles.Add(SpecHandle);
+		
+		if (bShouldActivate)
+		{
+			AbilitySystemComponent->TryActivateAbility(SpecHandle);
+		}
 	}
 	// 在取消所有权限后，我们会在返回前通知用户界面。
 	SendAbilitiesChangedEvent();
