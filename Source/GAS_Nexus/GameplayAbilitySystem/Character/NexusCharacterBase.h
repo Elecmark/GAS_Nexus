@@ -61,7 +61,10 @@ public:
 	void SendAbilitiesChangedEvent();
 	
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category="AbilitySystem")
-	void Server_SendGameplayEventToSelf(FGameplayEventData EventData);
+	void ServerSendGameplayEventToSelf(FGameplayEventData EventData);
+	
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category="AbilitySystem")
+	void MultiSendGameplayEventToSelf(AActor* TargetActor, FGameplayEventData EventData);
 
 public:	
 	// Called every frame

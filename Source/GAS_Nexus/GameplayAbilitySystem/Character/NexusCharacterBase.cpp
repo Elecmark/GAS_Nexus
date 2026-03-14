@@ -170,9 +170,14 @@ void ANexusCharacterBase::SendAbilitiesChangedEvent()
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, EventData.EventTag, EventData);
 }
 
-void ANexusCharacterBase::Server_SendGameplayEventToSelf_Implementation(FGameplayEventData EventData)
+void ANexusCharacterBase::ServerSendGameplayEventToSelf_Implementation(FGameplayEventData EventData)
 {
 	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(this, EventData.EventTag, EventData);
+}
+
+void ANexusCharacterBase::MultiSendGameplayEventToSelf_Implementation(AActor* TargetActor, FGameplayEventData EventData)
+{
+	UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(TargetActor, EventData.EventTag, EventData);
 }
 
 UAbilitySystemComponent* ANexusCharacterBase::GetAbilitySystemComponent() const
