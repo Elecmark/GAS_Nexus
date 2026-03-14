@@ -9,6 +9,14 @@ UNexusGameplayAbility::UNexusGameplayAbility()
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Dead")));
 }
 
+void UNexusGameplayAbility::SetAbilityLevel(const int32 NewLevel)
+{
+	if (FGameplayAbilitySpec* AbilitySpec = GetCurrentAbilitySpec())
+	{
+		AbilitySpec->Level = NewLevel;
+	}
+}
+
 bool UNexusGameplayAbility::HasPC() const
 {
 	const APawn* Pawn = Cast<APawn>(GetAvatarActorFromActorInfo());

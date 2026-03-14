@@ -39,6 +39,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	EAbilityInputID AbilityInputID = EAbilityInputID::None;
+	
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	void SetAbilityLevel(int32 NewLevel);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Helper")
 	bool HasPC() const;

@@ -106,7 +106,7 @@ void ANexusCharacterBase::HandleDeath_Implementation()
 	GetMesh()->AddImpulseAtLocation(Impulse, GetActorLocation());
 }
 
-TArray<FGameplayAbilitySpecHandle> ANexusCharacterBase::GrantAbilities(TArray<TSubclassOf<UGameplayAbility>> AbilitiesToGrant)
+TArray<FGameplayAbilitySpecHandle> ANexusCharacterBase::GrantAbilities(TArray<TSubclassOf<UGameplayAbility>> AbilitiesToGrant, const int32 Level)
 {
 	// 如果能力系统组件无效，我们就返回一个空数组
 	if (!AbilitySystemComponent || !HasAuthority())
@@ -116,9 +116,14 @@ TArray<FGameplayAbilitySpecHandle> ANexusCharacterBase::GrantAbilities(TArray<TS
 
 	// 第二步，创建一个类型为FGameplayAbilitySpecHandle的空TArray，这样我们就能返回这个TArray了。
 	TArray<FGameplayAbilitySpecHandle> AbilityHandles;
-
 	for (TSubclassOf<UGameplayAbility> Ability : AbilitiesToGrant)
 	{
+		// 检查Ability 是否有效
+		if (!Ability || !IsValid(Ability))
+		{
+			continue;
+		}
+		
 		int32 InputID = -1;
 		bool bShouldActivate = false;
 		if (const UNexusGameplayAbility* NexusAbilityCDO = GetDefault<UNexusGameplayAbility>(Ability))
@@ -128,7 +133,7 @@ TArray<FGameplayAbilitySpecHandle> ANexusCharacterBase::GrantAbilities(TArray<TS
 		}
 		// 首先遍历赋予这个函数的所有能力，并逐一授予它们输入ID。
 		FGameplayAbilitySpecHandle SpecHandle = AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(
-			Ability, 1, InputID, this));
+			Ability, Level, InputID, this));
 
 		AbilityHandles.Add(SpecHandle);
 		
